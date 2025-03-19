@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    container_name: xa-db-1
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: xa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    container_name: xa-redis-1
+    ports:
+      - "6380:6379"
+
+  back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xa-back-1
+    volumes:
+      - .:/xa
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      RUN_CELERY: "False"
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m celery -A config worker --loglevel=info
+    container_name: xa-celery_worker-1
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      RUN_CELERY: "True"
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m celery -A config beat --loglevel=info
+    container_name: xa-celery_beat-1
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      RUN_CELERY: "True"
+
+volumes:
+  postgres_data:
