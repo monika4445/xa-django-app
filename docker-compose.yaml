@@ -5,11 +5,11 @@ services:
     image: postgres:13
     container_name: xa-db-1
     ports:
-      - "5432:5432"
+      - "5435:5432"
     environment:
       POSTGRES_DB: xa
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: xa_password999
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

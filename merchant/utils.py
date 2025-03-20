@@ -2,7 +2,10 @@ import hashlib
 import requests
 
 from trader.models import Trader
-from config.settings import ECOM_API_KEY, ECOM_API_LINK
+from django.conf import settings
+
+ECOM_API_KEY = settings.ECOM_API_KEY
+ECOM_API_LINK = settings.ECOM_API_LINK
 
 def update_balace_trader(trader_id: str, amount_by_currency_trader: float):
     """Функция для обновления баланса трейдера"""

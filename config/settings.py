@@ -18,6 +18,9 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Allowed hosts configuration
 ALLOWED_HOSTS = ["test213gh7.me", "www.test213gh7.me"]
 
+ECOM_API_KEY = "your_api_key_here"
+ECOM_API_LINK = "your_api_link_here"
+
 # Application definition
 INSTALLED_APPS = [
     # Default Django apps
@@ -81,11 +84,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_NAME', 'postgres'),
+        'NAME': os.getenv('POSTGRES_NAME', 'xa'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'password'),
         'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'PORT': os.getenv('POSTGRES_PORT', '5434'),
     }
 }
 
