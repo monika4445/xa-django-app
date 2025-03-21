@@ -1,45 +1,44 @@
-# Python
-*.pyc
-*.pyo
-__pycache__
-*.pyd
-*.db
-*.sqlite3
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Django
-*.log
-local_settings.py
-db.sqlite3
-*.pot
-*.pyc
-*.pyo
-*.db
-*.sqlite3
-media
-static
-
-# Virtual Environment
+# Virtual environment
 venv/
-env/
-.venv/
-.env/
+.env
+.env.example
 
-# IDEs and editors
-.idea/
+# Django-specific
+db.sqlite3
+logs/
+*.log
+staticfiles/
+media/
+
+# IDE / Editor specific
 .vscode/
-*.sublime-workspace
-*.sublime-project
+.idea/
+*.swp
+*.swo
 
-# Test coverage
-.coverage
-*.cover
-
-# MySQL
-*.pid
-*.err
-
-# macOS
-.DS_Store
-
-# Windows
+# OS-specific
+.DS_Storeb
 Thumbs.db
+
+# Docker
+docker-compose.override.yml
+*.pid
+
+# PostgreSQL / Redis data (if using Docker volumes)
+postgres-data/
+redis-data/
+
+# Python packages
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# Migrations (optional if you generate them on deployment)
+apps/**/migrations/*.py
+!apps/**/migrations/__init__.py

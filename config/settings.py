@@ -43,8 +43,8 @@ INSTALLED_APPS = [
 
     # Your custom apps
     'accounts',
-    'merchant',
     'referal',
+    'merchant',
     'support',
     'trader',
 ]

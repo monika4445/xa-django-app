@@ -63,7 +63,7 @@ class Deal(models.Model):
     provider_id = models.ForeignKey("trader.Provider", blank=True, null=True, on_delete=models.CASCADE, verbose_name='Провайдер')
 
     responsible_id = models.ForeignKey("trader.Trader", blank=True, null=True, on_delete=models.CASCADE, verbose_name='Трейдер')
-    creds_id = models.ForeignKey('trader.CredsTrader', blank=True, null=True, on_delete=models.CASCADE, verbose_name='Креды трейдера')
+    creds_id = models.ForeignKey('trader.CredsTrader', blank=True, null=True, on_delete=models.CASCADE, db_column="creds_id", verbose_name='Креды трейдера')
 
     amount = models.DecimalField(max_digits=10, decimal_places=2) 
 

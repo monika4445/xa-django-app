@@ -1,13 +1,7 @@
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.postgres.fields import ArrayField
-
-
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-import uuid
-from django.db import models
 
 class UserManager(BaseUserManager):
     def create_user(self, login, password=None, **extra_fields):
@@ -25,8 +19,8 @@ class UserManager(BaseUserManager):
         return self.create_user(login, password, **extra_fields)
 
 class UserAccounts(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
+    id = models.AutoField(primary_key=True)  
+
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
     patronymic_name = models.CharField(max_length=255, blank=True, null=True)
@@ -58,8 +52,6 @@ class UserAccounts(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.login
 
-
-
 class TelegramBotSettings(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -67,6 +59,7 @@ class TelegramBotSettings(models.Model):
         SYSTEM = 'SYSTEM'
         TRADER = 'TRADER'
         SUPPORT = 'SUPPORT'
+    
     notification_type = models.CharField(max_length=50, choices=NotificationType.choices)
     bot_token = models.CharField(max_length=255, verbose_name='Токен телеграм бота')
 
