@@ -1,13 +1,13 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.contrib.postgres.fields import ArrayField
 
 class UserManager(BaseUserManager):
-    def create_user(self, login, password=None, **extra_fields):
+    def create_user(self, login, password=None, role='MERCHANT', **extra_fields):
         if not login:
             raise ValueError('User must have a login')
-        user = self.model(login=login, **extra_fields)
+        extra_fields.setdefault('is_active', True)  # Активируем пользователя по умолчанию
+        user = self.model(login=login, role=role, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -16,41 +16,42 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('role', UserAccounts.Role.ADMIN)  # Роль ADMIN
         return self.create_user(login, password, **extra_fields)
 
 class UserAccounts(AbstractBaseUser, PermissionsMixin):
-    id = models.AutoField(primary_key=True)  
+    class Role(models.TextChoices):
+        ADMIN = 'ADMIN', 'Admin'
+        MERCHANT = 'MERCHANT', 'Merchant'
+        TRADER = 'TRADER', 'Trader'
 
+    id = models.AutoField(primary_key=True)
+    login = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
     patronymic_name = models.CharField(max_length=255, blank=True, null=True)
-    login = models.CharField(max_length=30, unique=True)
     avatar = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
 
-    objects = UserManager()
+    role = models.CharField(
+        max_length=10,
+        choices=Role.choices,
+        default=Role.MERCHANT,  # По умолчанию Мерчант
+    )
 
-    is_active = models.BooleanField(blank=True, default=False)
-    is_confirmed = models.BooleanField(default=False)
-    in_consideration = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)  # По умолчанию пользователь активен
+    is_confirmed = models.BooleanField(default=False)  # Подтвержден ли пользователь
+    in_consideration = models.BooleanField(default=True)  # На рассмотрении?
+    is_staff = models.BooleanField(default=False)  # Доступ к админке Django
+
+    objects = UserManager()
 
     USERNAME_FIELD = 'login'
     REQUIRED_FIELDS = []
 
-    groups = models.ManyToManyField(
-        'auth.Group', 
-        related_name='useraccounts_set',  # Unique related name
-        blank=True,
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission', 
-        related_name='useraccounts_permissions',  # Unique related name
-        blank=True,
-    )
-
     def __str__(self):
-        return self.login
+        return f"{self.login} ({self.get_role_display()})"
+
 
 class TelegramBotSettings(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
