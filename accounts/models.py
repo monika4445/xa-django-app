@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 
 class UserManager(BaseUserManager):
     def create_user(self, login, password=None, role='MERCHANT', **extra_fields):
@@ -33,6 +33,9 @@ class UserAccounts(AbstractBaseUser, PermissionsMixin):
     avatar = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
 
+    groups = models.ManyToManyField(Group, related_name="user_accounts_groups", blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name="user_accounts_permissions", blank=True)
+    
     role = models.CharField(
         max_length=10,
         choices=Role.choices,
