@@ -24,6 +24,7 @@ class UserAccounts(AbstractBaseUser, PermissionsMixin):
         ADMIN = 'ADMIN', 'Admin'
         MERCHANT = 'MERCHANT', 'Merchant'
         TRADER = 'TRADER', 'Trader'
+        SUPPORT = 'SUPPORT', 'Support'
 
     id = models.AutoField(primary_key=True)
     login = models.CharField(max_length=30, unique=True)
@@ -35,7 +36,7 @@ class UserAccounts(AbstractBaseUser, PermissionsMixin):
 
     groups = models.ManyToManyField(Group, related_name="user_accounts_groups", blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name="user_accounts_permissions", blank=True)
-    
+
     role = models.CharField(
         max_length=10,
         choices=Role.choices,

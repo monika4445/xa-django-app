@@ -13,9 +13,11 @@ from .models import (
     UserAccounts
 )
 from .serializer import (
-    RefreshTokenSerialzierPost, LoginResponceSerialzier, LoginSerializer
+    RefreshTokenSerialzierPost, LoginResponceSerialzier, LoginSerializer, RegistrationSerializer
 )
 
+from rest_framework.views import APIView
+from rest_framework import status
 
 class UserBaseViewSet(BaseCRUD):
     permission_classes = [AllowAny]
@@ -74,3 +76,37 @@ class RefreshViewSet(GenericViewSet):
             return Response(serializer.validated_data, 200)
         else:
             return Response(serializer.errors, 400)
+
+class RegistrationView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        request_body=RegistrationSerializer,
+        responses={201: 'Created', 400: 'Bad Request'},
+        operation_summary="Register a new user",
+        operation_description="This endpoint registers a new user account."
+    )
+    def post(self, request):
+        serializer = RegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()  # UserManager.create_user should be used in serializer's create method
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        request_body=RefreshTokenSerialzierPost,  # Or a custom serializer to accept a refresh token
+        responses={200: 'Logged out', 400: 'Bad Request'},
+        operation_summary="Logout user",
+        operation_description="This endpoint logs out the user by blacklisting the refresh token."
+    )
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Ensure blacklisting is enabled in your settings
+            return Response({"message": "Logged out successfully"}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
