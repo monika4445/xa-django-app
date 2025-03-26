@@ -35,15 +35,14 @@ class UserBaseViewSet(BaseCRUD):
         tags=["JWT"]
     )
     def login(self, request):
-        serialzier = LoginSerializer(data=request.data)
-        if serialzier.is_valid():
-            try:
-                user = UserAccounts.objects.get(login=serialzier.data['username'])
-            except:
-                return Response({"message": 'This user not found in system'}, 400)
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = UserAccounts.objects.filter(login=serializer.validated_data['login']).first()
+            if not user:
+                return Response({"message": "This user not found in system"}, status=400)
 
-            if not user.check_password(serialzier.data['password']):
-                return Response({"message": "Invalid password"}, status=400)
+            if not user.check_password(serializer.validated_data['password']):
+                return Response({"message": "Invalid password"}, status=401)
 
             refresh = RefreshToken.for_user(user)
             data = {
@@ -54,8 +53,7 @@ class UserBaseViewSet(BaseCRUD):
             }
             update_last_login(None, user)
             return Response(data, 200)
-        else:
-            return Response(serialzier.errors, 400)
+        return Response(serializer.errors, 400)
 
         
 
@@ -106,7 +104,7 @@ class LogoutView(APIView):
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
-            token.blacklist()  # Ensure blacklisting is enabled in your settings
+            #token.blacklist()  
             return Response({"message": "Logged out successfully"}, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=400)

@@ -10,6 +10,8 @@ class OrderStatus(models.TextChoices):
     CANCELED = "canceled", _("Отменен")
 
 class Order(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    
     status = models.CharField(
         max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING
     )
